@@ -41,7 +41,7 @@ func (o *OutputTo) Output(output *Output, level Level, title string, message str
 
 		err := os.MkdirAll(path.Dir(o.FileName), os.ModePerm)
 		if err == nil {
-			file := manager.GetManageError().ExecuteWith2Parameters(o.GetFile()).GetResultOnly().(*os.File)
+			file := manager.StartNewManageError().ExecuteWith2Parameters(o.GetFile()).GetResultOnly().(*os.File)
 			file.WriteString(output.SPrint(level, title, message))
 		}
 		if previousColor {
