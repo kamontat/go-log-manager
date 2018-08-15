@@ -46,37 +46,37 @@ func (l *LogWrapper) Setting() *Setting {
 }
 
 // ToError log as error
-func (l *LogWrapper) ToError(title string, message string) {
+func (l *LogWrapper) ToError(title string, message interface{}) {
 	l.out.Print(LLevelError, title, message)
 }
 
 // ToWarn log as warn
-func (l *LogWrapper) ToWarn(title string, message string) {
+func (l *LogWrapper) ToWarn(title string, message interface{}) {
 	l.out.Print(LLevelWarn, title, message)
 }
 
 // ToWarning log as warn
-func (l *LogWrapper) ToWarning(title string, message string) {
+func (l *LogWrapper) ToWarning(title string, message interface{}) {
 	l.out.Print(LLevelWarn, title, message)
 }
 
 // ToInfo log as info
-func (l *LogWrapper) ToInfo(title string, message string) {
+func (l *LogWrapper) ToInfo(title string, message interface{}) {
 	l.out.Print(LLevelInfo, title, message)
 }
 
 // ToLog log as log
-func (l *LogWrapper) ToLog(title string, message string) {
+func (l *LogWrapper) ToLog(title string, message interface{}) {
 	l.out.Print(LLevelLog, title, message)
 }
 
 // ToDebug log as debug
-func (l *LogWrapper) ToDebug(title string, message string) {
+func (l *LogWrapper) ToDebug(title string, message interface{}) {
 	l.out.Print(LLevelDebug, title, message)
 }
 
 // ToVerbose log as verbose
-func (l *LogWrapper) ToVerbose(title string, message string) {
+func (l *LogWrapper) ToVerbose(title string, message interface{}) {
 	l.out.Print(LLevelVerbose, title, message)
 }
 
@@ -91,21 +91,21 @@ func (p *PrintWrapper) Setting() *Setting {
 }
 
 // ToOneLine print as oneline
-func (p *PrintWrapper) ToOneLine(title string, message string) {
+func (p *PrintWrapper) ToOneLine(title string, message interface{}) {
 	p.out.Print(PLevelOneLine, title, message)
 }
 
 // ToSilent print as slient
-func (p *PrintWrapper) ToSilent(title string, message string) {
+func (p *PrintWrapper) ToSilent(title string, message interface{}) {
 	p.out.Print(PLevelSilent, title, message)
 }
 
 // ToNormal print as normal
-func (p *PrintWrapper) ToNormal(title string, message string) {
+func (p *PrintWrapper) ToNormal(title string, message interface{}) {
 	p.out.Print(PLevelNormal, title, message)
 }
 
 // ToUnneccessary print as unneccesssary
-func (p *PrintWrapper) ToUnneccessary(title string, message string) {
+func (p *PrintWrapper) ToUnneccessary(title string, message interface{}) {
 	p.out.Print(PLevelUnneccessary, title, message)
 }

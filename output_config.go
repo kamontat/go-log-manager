@@ -31,7 +31,7 @@ type OutputTo struct {
 }
 
 // Output show output to specify location and type
-func (o *OutputTo) Output(output *Output, level Level, title string, message string) {
+func (o *OutputTo) Output(output *Output, level Level, title string, message interface{}) {
 	if o.Stdout {
 		fmt.Print(output.SPrint(level, title, message))
 	}

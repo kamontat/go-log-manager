@@ -9,7 +9,7 @@ import (
 )
 
 // FormatMessage is function to format message
-type FormatMessage func(*Output, Level, string, string) string
+type FormatMessage func(*Output, Level, string, interface{}) string
 
 // Setting is setting object for Output
 type Setting struct {
@@ -68,12 +68,12 @@ func New(name string, format FormatMessage, setting *Setting) *Output {
 }
 
 // DefaultLoggerFormatMessage is FormatMessage type which output message as logger formating
-func DefaultLoggerFormatMessage(o *Output, level Level, title string, message string) string {
+func DefaultLoggerFormatMessage(o *Output, level Level, title string, message interface{}) string {
 	return fmt.Sprintf("%-23s [%3s] [%-15s]: %s\n", level.Colorize(time.Now().Format(DateFormat)), level.GetString(), strings.Title(title), message)
 }
 
 // DefaultPrinterFormatMessage is FormatMessage type which output message as printer formating
-func DefaultPrinterFormatMessage(o *Output, level Level, title string, message string) string {
+func DefaultPrinterFormatMessage(o *Output, level Level, title string, message interface{}) string {
 	return fmt.Sprintf("%-15s: %s\n", strings.Title(title), message)
 }
 
@@ -83,7 +83,7 @@ func (o *Output) IsSupport(level Level) bool {
 }
 
 // SPrint will return string formated
-func (o *Output) SPrint(level Level, title string, message string) string {
+func (o *Output) SPrint(level Level, title string, message interface{}) string {
 	// Update color setting
 	color.NoColor = !o.GetSetting().Color
 	if o.IsSupport(level) {
@@ -93,7 +93,7 @@ func (o *Output) SPrint(level Level, title string, message string) string {
 }
 
 // Print will print input as string formated
-func (o *Output) Print(level Level, title string, message string) {
+func (o *Output) Print(level Level, title string, message interface{}) {
 	if o.IsSupport(level) {
 		o.GetSetting().To.Output(o, level, title, message)
 	}
