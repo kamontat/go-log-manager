@@ -50,7 +50,14 @@ func New(name string, format FormatMessage, setting *Setting) *Output {
 		setting.Type = Logger
 	}
 	if setting.To == nil {
-		setting.To = &OutputTo{Stdout: true, File: true, FileName: "/tmp/output/out-" + name + ".log"}
+		var fileName = "/tmp/output/" + name
+		if setting.Type == Logger {
+			fileName += ConstrantLogSuffixName
+		} else if setting.Type == Printer {
+			fileName += ConstrantPrintSuffixName
+		}
+
+		setting.To = &OutputTo{Stdout: true, File: true, FileName: fileName}
 	}
 	if format == nil {
 		if setting.Type == Logger {
@@ -69,12 +76,12 @@ func New(name string, format FormatMessage, setting *Setting) *Output {
 
 // DefaultLoggerFormatMessage is FormatMessage type which output message as logger formating
 func DefaultLoggerFormatMessage(o *Output, level Level, title string, message interface{}) string {
-	return fmt.Sprintf("%-23s [%3s] [%-15s]: %s\n", level.Colorize(time.Now().Format(DateFormat)), level.GetString(), strings.Title(title), message)
+	return fmt.Sprintf("%-23s [%3s] [%-"+ConstrantLogTitleSize+"s]: %s\n", level.Colorize(time.Now().Format(ConstrantDateFormat)), level.GetString(), strings.Title(title), message)
 }
 
 // DefaultPrinterFormatMessage is FormatMessage type which output message as printer formating
 func DefaultPrinterFormatMessage(o *Output, level Level, title string, message interface{}) string {
-	return fmt.Sprintf("%-15s: %s\n", strings.Title(title), message)
+	return fmt.Sprintf("%-"+ConstrantPrintTitleSize+"s: %s\n", strings.Title(title), message)
 }
 
 // IsSupport will check current setting is support input level

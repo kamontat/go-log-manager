@@ -35,15 +35,24 @@ func (o *OutputTo) Output(output *Output, level Level, title string, message int
 	if o.Stdout {
 		fmt.Print(output.SPrint(level, title, message))
 	}
+
 	if o.File {
 		previousColor := output.GetSetting().Color
 		output.DisableColor()
 
+		exception := manager.StartNewManageError()
+
 		err := os.MkdirAll(path.Dir(o.FileName), os.ModePerm)
-		if err == nil {
-			file := manager.StartNewManageError().ExecuteWith2Parameters(o.GetFile()).GetResultOnly().(*os.File)
-			file.WriteString(output.SPrint(level, title, message))
+		exception.AddNewError(err)
+		f, err := o.GetFile()
+		exception.AddNewError(err)
+
+		if !exception.HaveError() {
+			f.WriteString(output.SPrint(level, title, message))
+		} else {
+			exception.Throw().ShowMessage()
 		}
+
 		if previousColor {
 			output.EnableColor()
 		}

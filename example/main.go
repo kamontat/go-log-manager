@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+
 	om.LoadLogger(om.NewDefaultLogger("default", &om.Setting{
 		Color: true,
 		Level: om.LLevelVerbose,
