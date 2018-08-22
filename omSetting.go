@@ -1,5 +1,9 @@
 package om
 
+import (
+	"path"
+)
+
 // FormatMessage is function to format message
 type FormatMessage func(*Output, *Level, string, interface{}) string
 
@@ -51,7 +55,7 @@ func (s *Setting) SetAsDefaultOutputTo() {
 		name = s.Name
 	}
 
-	fileName := "/tmp/output/" + name
+	fileName := path.Join(ConstrantTmpFolder, ConstrantAppName, name)
 
 	if s.Type == Printer {
 		fileName += ConstrantPrintSuffixName

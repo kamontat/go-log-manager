@@ -7,6 +7,10 @@ import (
 )
 
 var (
+	// ConstrantTmpFolder is a folder of temp files
+	ConstrantTmpFolder = "/tmp"
+	// ConstrantAppName is app name of generate file
+	ConstrantAppName = "output"
 	// ConstrantLogSuffixName is suffix of log file
 	ConstrantLogSuffixName = fmt.Sprintf("-%d.log", time.Now().Unix())
 	// ConstrantPrintSuffixName is suffix of print file
