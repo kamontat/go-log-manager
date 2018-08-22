@@ -37,10 +37,16 @@ func (o *Output) IsSupport(level *Level) bool {
 	return o.GetSetting().Level.GetNumber() >= level.GetNumber()
 }
 
+// UpdateColor will set color disable by output setting
+func (o *Output) UpdateColor() {
+	color.NoColor = !o.GetSetting().Color
+}
+
 // SPrint will return string formated
 func (o *Output) SPrint(level *Level, title string, message interface{}) string {
 	// Update color setting
-	color.NoColor = !o.GetSetting().Color
+	o.UpdateColor()
+
 	if o.IsSupport(level) {
 		return o.setting.Format(o, level, title, message)
 	}
@@ -49,9 +55,7 @@ func (o *Output) SPrint(level *Level, title string, message interface{}) string 
 
 // Print will print input as string formated
 func (o *Output) Print(level *Level, title string, message interface{}) {
-	if o.IsSupport(level) {
-		o.GetSetting().To.Output(o, level, title, message)
-	}
+	o.GetSetting().To.Output(o, level, title, message)
 }
 
 // GetSetting will return setting

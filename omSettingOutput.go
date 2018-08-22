@@ -7,7 +7,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/fatih/color"
 	"github.com/kamontat/go-error-manager"
 )
 
@@ -37,7 +36,10 @@ type OutputTo struct {
 
 // Output show output to specify location and type
 func (o *OutputTo) Output(output *Output, level *Level, title string, message interface{}) {
-	if o.Stdout {
+	// Update color setting
+	output.UpdateColor()
+
+	if o.Stdout && output.IsSupport(level) {
 		// Print to stdout
 		for _, l := range ConstrantStandartOutputLevelList {
 			if l.Equal(level) {
@@ -65,7 +67,8 @@ func (o *OutputTo) Output(output *Output, level *Level, title string, message in
 		exception.AddNewError(err)
 
 		if !exception.HaveError() {
-			f.WriteString(output.SPrint(level, title, message))
+
+			f.WriteString(output.setting.Format(output, level, title, message))
 		} else {
 			exception.Throw().ShowMessage()
 		}
@@ -76,7 +79,7 @@ func (o *OutputTo) Output(output *Output, level *Level, title string, message in
 	}
 
 	// Reupdate color setting
-	color.NoColor = !output.GetSetting().Color
+	output.UpdateColor()
 }
 
 // GetFile will return File object if error ot occur and o.File set to be true
