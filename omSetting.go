@@ -5,7 +5,7 @@ type FormatMessage func(*Output, *Level, string, interface{}) string
 
 // Setting is setting object for Output
 type Setting struct {
-	name   string
+	Name   string
 	Format FormatMessage
 	Type   *OutputType
 	Level  *Level
@@ -13,14 +13,9 @@ type Setting struct {
 	Color  bool
 }
 
-// Name of the setting
-func (s *Setting) Name() string {
-	return s.name
-}
-
 // SetAsDefaultName will set current setting to by default value
 func (s *Setting) SetAsDefaultName() {
-	s.name = "default"
+	s.Name = "default"
 }
 
 // SetAsDefaultType will set current setting to by default value
@@ -52,8 +47,8 @@ func (s *Setting) SetOutputTo(to *OutputTo) *Setting {
 // SetAsDefaultOutputTo will set current setting to by default value
 func (s *Setting) SetAsDefaultOutputTo() {
 	var name = "default"
-	if s.name != "" {
-		name = s.name
+	if s.Name != "" {
+		name = s.Name
 	}
 
 	fileName := "/tmp/output/" + name
@@ -89,7 +84,7 @@ func (s *Setting) SetAsDefaultFormat() {
 
 // MarkDefault will mark all nil value to default value
 func (s *Setting) MarkDefault() {
-	if s.name == "" {
+	if s.Name == "" {
 		s.SetAsDefaultName()
 	}
 
