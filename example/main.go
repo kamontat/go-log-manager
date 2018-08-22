@@ -1,46 +1,69 @@
 package main
 
 import (
+	"fmt"
+	"reflect"
+	"runtime"
+	"strings"
+
 	"github.com/fatih/color"
 	"github.com/kamontat/go-log-manager"
 )
 
-func main() {
+func exec(i func(), desc string) {
+	om.Print = nil
 
-	om.LoadLogger(om.NewDefaultLogger("default", &om.Setting{
+	fn := runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
+	fnName := strings.Replace(fn, ".", " ", -1)
+	fnName = strings.Replace(fnName, "case", "case ", -1)
+	final := strings.Title(fnName)
+
+	fmt.Println(final + ") " + desc)
+	fmt.Println("-------------------------")
+
+	i()
+
+	fmt.Println()
+}
+
+// Log without setup
+func case1() {
+	om.ConstrantExitOnError = false
+
+	om.Log.ToVerbose("verbose", "verbose message")
+}
+
+// Normal log
+func case2() {
+	om.SetupNewLogger(&om.Setting{
 		Color: true,
 		Level: om.LLevelVerbose,
-	}))
+	})
 
-	om.LoadPrinter(om.NewDefaultPrinter("default", &om.Setting{
+	om.Log.ToVerbose("verbose", "verbose message")
+	om.Log.ToDebug("debug", "debug message")
+	om.Log.ToLog("log", "log message")
+	om.Log.ToInfo("info", "info message")
+	om.Log.ToWarn("warn", "warn message")
+	om.Log.ToError("error", "error message")
+}
+
+func case3() {
+	om.SetupNewPrinter(&om.Setting{
 		Color: true,
 		Level: om.PLevelUnneccessary,
-	}))
+	})
 
-	om.Log().ToDebug("debug", "debug message")
+	om.Print.ToOneLine("one line", "one line message")
+	om.Print.ToSilent("silent", "silent message")
+	om.Print.ToNormal("normal", "normal "+color.BlueString("message"))
+	om.Print.ToUnneccessary("unneccessary", "unneccessary message")
+}
 
-	om.Log().ToVerbose("verbose", "verbose message")
-	om.Log().ToError("error", "error message")
-	om.Log().ToWarn("warn", "warn message")
-	om.Log().ToInfo("info", "info message")
-	om.Log().ToLog("log", "log message")
-	om.Log().ToDebug("debug", "debug message")
+func main() {
+	exec(case1, "log without setup")
 
-	om.Print().ToOneLine("one line", "one line message")
-	om.Print().ToSilent("silent", "silent message")
-	om.Print().ToNormal("normal", "normal "+color.BlueString("message"))
-	om.Print().ToUnneccessary("unneccessary", "unneccessary message")
+	exec(case2, "normal log")
 
-	om.Log().Setting().SetColor(false)
-	om.Log().ToError("error", "no color error message")
-	om.Print().ToNormal("normal", "no color normal "+color.BlueString("message"))
-
-	om.Log().Setting().SetColor(true)
-	om.Log().Setting().SetMaximumLevel(om.LLevelInfo)
-	om.Log().ToError("error", "show error message")
-	om.Log().ToWarn("warn", "show warn message")
-	om.Log().ToInfo("info", "show info message")
-	om.Log().ToLog("log", "not show log message")
-	om.Log().ToDebug("debug", "not show debug message")
-	om.Log().ToVerbose("verbose", "not show verbose message")
+	exec(case3, "normal print")
 }

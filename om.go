@@ -1,111 +1,157 @@
 package om
 
-var logger *LogWrapper
-var printer *PrintWrapper
+import (
+	"errors"
+
+	manager "github.com/kamontat/go-error-manager"
+)
+
+// Log is logger object
+var Log = &LogWrapper{out: manager.WrapNil()}
+
+// Print is printer object
+var Print = &PrintWrapper{out: manager.WrapNil()}
+
+// Checker interface for check Output is exist
+type Checker interface {
+	Check() *manager.Throwable
+	unwrap() *Output
+}
 
 // LogWrapper for wrap the output to customize next chain
 type LogWrapper struct {
-	out *Output
+	out *manager.ResultWrapper
 }
 
 // PrintWrapper for wrap the output to customize next chain
 type PrintWrapper struct {
-	out *Output
+	out *manager.ResultWrapper
 }
 
-// LoadLogger will set log as output wrapper
-func LoadLogger(output *Output) {
-	logger = &LogWrapper{out: output}
+// Check will check output object in wrapper
+func (l *LogWrapper) Check() *manager.Throwable {
+	return l.out.Catch(func() error {
+		return errors.New("logger is not exist, please call SetupLogger first")
+	}, nil)
 }
 
-// LoadPrinter will set print as output wrapper
-func LoadPrinter(output *Output) {
-	printer = &PrintWrapper{out: output}
+// unwrap will call force unwrap so be aware
+func (l *LogWrapper) unwrap() *Output {
+	return l.out.ForceUnwrap().(*Output)
 }
 
-// SetupLogger will create default logger with format and setting.
+// Check will check output object in wrapper
+func (p *PrintWrapper) Check() *manager.Throwable {
+	return p.out.Catch(func() error {
+		return errors.New("printer is not exist, please call SetupPrinter first")
+	}, nil)
+}
+
+// unwrap will call force unwrap so be aware
+func (p *PrintWrapper) unwrap() *Output {
+	return p.out.ForceUnwrap().(*Output)
+}
+
+// GetOutput will return Output if exist, or exit the program
+func GetOutput(c Checker) *Output {
+	t := c.Check()
+	t.ShowMessage()
+
+	if ConstrantExitOnError {
+		t.Exit()
+	}
+
+	if t.CanBeThrow() {
+		return &Output{setting: &Setting{Level: LLevelNone}}
+	}
+	return c.unwrap()
+}
+
+// SetupExistLogger will set log as output wrapper
+func SetupExistLogger(output *Output) {
+	output.setting.Type = Logger
+	Log = &LogWrapper{out: manager.Wrap(output)}
+}
+
+// SetupExistPrinter will set print as output wrapper
+func SetupExistPrinter(output *Output) {
+	output.setting.Type = Printer
+	Print = &PrintWrapper{out: manager.Wrap(output)}
+}
+
+// SetupNewLogger will create default logger with format and setting.
 // note: format can be null
-func SetupLogger(setting *Setting, format FormatMessage) {
-	logger = &LogWrapper{out: NewCustomLogger("default", format, setting)}
+func SetupNewLogger(setting *Setting) {
+	Log = &LogWrapper{out: manager.Wrap(NewLogger(setting))}
 }
 
-// SetupPrinter will create default printer with format and setting.
+// SetupNewPrinter will create default printer with format and setting.
 // note: format can be null
-func SetupPrinter(setting *Setting, format FormatMessage) {
-	printer = &PrintWrapper{out: NewCustomPrinter("default", format, setting)}
-}
-
-// Log will return LogWrapper
-func Log() *LogWrapper {
-	return logger
+func SetupNewPrinter(setting *Setting) {
+	Print = &PrintWrapper{out: manager.Wrap(NewPrinter(setting))}
 }
 
 // Setting will return current logger setting
 func (l *LogWrapper) Setting() *Setting {
-	return l.out.setting
+	return GetOutput(l).setting
 }
 
 // ToError log as error
 func (l *LogWrapper) ToError(title string, message interface{}) {
-	l.out.Print(LLevelError, title, message)
+	GetOutput(l).Print(LLevelError, title, message)
 }
 
 // ToWarn log as warn
 func (l *LogWrapper) ToWarn(title string, message interface{}) {
-	l.out.Print(LLevelWarn, title, message)
+	GetOutput(l).Print(LLevelWarn, title, message)
 }
 
 // ToWarning log as warn
 func (l *LogWrapper) ToWarning(title string, message interface{}) {
-	l.out.Print(LLevelWarn, title, message)
+	GetOutput(l).Print(LLevelWarn, title, message)
 }
 
 // ToInfo log as info
 func (l *LogWrapper) ToInfo(title string, message interface{}) {
-	l.out.Print(LLevelInfo, title, message)
+	GetOutput(l).Print(LLevelInfo, title, message)
 }
 
 // ToLog log as log
 func (l *LogWrapper) ToLog(title string, message interface{}) {
-	l.out.Print(LLevelLog, title, message)
+	GetOutput(l).Print(LLevelLog, title, message)
 }
 
 // ToDebug log as debug
 func (l *LogWrapper) ToDebug(title string, message interface{}) {
-	l.out.Print(LLevelDebug, title, message)
+	GetOutput(l).Print(LLevelDebug, title, message)
 }
 
 // ToVerbose log as verbose
 func (l *LogWrapper) ToVerbose(title string, message interface{}) {
-	l.out.Print(LLevelVerbose, title, message)
-}
-
-// Print will return PrintWrapper
-func Print() *PrintWrapper {
-	return printer
+	GetOutput(l).Print(LLevelVerbose, title, message)
 }
 
 // Setting will return current logger setting
 func (p *PrintWrapper) Setting() *Setting {
-	return p.out.setting
+	return GetOutput(p).setting
 }
 
 // ToOneLine print as oneline
 func (p *PrintWrapper) ToOneLine(title string, message interface{}) {
-	p.out.Print(PLevelOneLine, title, message)
+	GetOutput(p).Print(PLevelOneLine, title, message)
 }
 
 // ToSilent print as slient
 func (p *PrintWrapper) ToSilent(title string, message interface{}) {
-	p.out.Print(PLevelSilent, title, message)
+	GetOutput(p).Print(PLevelSilent, title, message)
 }
 
 // ToNormal print as normal
 func (p *PrintWrapper) ToNormal(title string, message interface{}) {
-	p.out.Print(PLevelNormal, title, message)
+	GetOutput(p).Print(PLevelNormal, title, message)
 }
 
 // ToUnneccessary print as unneccesssary
 func (p *PrintWrapper) ToUnneccessary(title string, message interface{}) {
-	p.out.Print(PLevelUnneccessary, title, message)
+	GetOutput(p).Print(PLevelUnneccessary, title, message)
 }

@@ -31,16 +31,28 @@ type OutputTo struct {
 }
 
 // Output show output to specify location and type
-func (o *OutputTo) Output(output *Output, level Level, title string, message interface{}) {
+func (o *OutputTo) Output(output *Output, level *Level, title string, message interface{}) {
 	if o.Stdout {
-		fmt.Print(output.SPrint(level, title, message))
+		// Print to stdout
+		for _, l := range ConstrantStandartOutputLevelList {
+			if l.Equal(level) {
+				fmt.Fprint(ConstrantStandartOutput, output.SPrint(level, title, message))
+			}
+		}
+
+		// Print to stderr
+		for _, l := range ConstrantStandartErrorLevelList {
+			if l.Equal(level) {
+				fmt.Fprint(ConstrantStandartError, output.SPrint(level, title, message))
+			}
+		}
 	}
 
 	if o.File {
 		previousColor := output.GetSetting().Color
 		output.DisableColor()
 
-		exception := manager.StartNewManageError()
+		exception := manager.StartErrorManager()
 
 		err := os.MkdirAll(path.Dir(o.FileName), os.ModePerm)
 		exception.AddNewError(err)
