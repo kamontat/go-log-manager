@@ -23,6 +23,11 @@ type OutputType struct {
 	name string
 }
 
+// Equal is equal method to check 2 outputType
+func (o *OutputType) Equal(t OutputType) bool {
+	return o.name == t.name
+}
+
 // OutputTo have 2 type; stdout and file
 type OutputTo struct {
 	Stdout   bool
